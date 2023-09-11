@@ -6,7 +6,7 @@ package main
 import (
 	"context"
 	"flag"
-	"kraude_tf/internal/provider"
+	"terraform-provider-kraude/internal/provider"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -25,7 +25,7 @@ func main() {
 
 	opts := providerserver.ServeOpts{
 
-		Address: "kraude.cloud/app/kraude-tf",
+		Address: "kraude.cloud/app/kraude",
 		Debug:   debug,
 	}
 

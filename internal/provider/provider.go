@@ -29,7 +29,7 @@ type KraudeProvider struct {
 
 // KraudeProviderModel describes the provider data model.
 type KraudeProviderModel struct {
-	AuthToken types.String `tfsdk:"authToken"`
+	AuthToken types.String `tfsdk:"auth_token"`
 }
 
 func (p *KraudeProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -39,14 +39,8 @@ func (p *KraudeProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 func (p *KraudeProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"host": schema.StringAttribute{
-				Optional: true,
-			},
-			"username": schema.StringAttribute{
-				Optional: true,
-			},
-			"password": schema.StringAttribute{
-				Optional:  true,
+			"auth_token": schema.StringAttribute{
+				Required:  true,
 				Sensitive: true,
 			},
 		},
@@ -64,7 +58,7 @@ func (p *KraudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 	if config.AuthToken.IsUnknown() {
 		resp.Diagnostics.AddAttributeError(
-			path.Root("authToken"),
+			path.Root("auth_token"),
 			"Unknown Kraude Auth Token",
 			"The provider cannot create the Kraude API client as there is an unknown configuration value for the Kraude API auth token. "+
 				"Either target apply the source of the value first, set the value statically in the configuration, or use the AUTH_TOKEN environment variable.",
@@ -83,7 +77,7 @@ func (p *KraudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 	if authToken == "" {
 		resp.Diagnostics.AddAttributeError(
-			path.Root("authToken"),
+			path.Root("auth_token"),
 			"Missing Auth Token",
 			"The provider cannot create the Kraude API client as there is a missing or empty value for the Kraude auth Token. "+
 				"Set the authToken value in the configuration or use the AUTH_TOKEN environment variable. "+

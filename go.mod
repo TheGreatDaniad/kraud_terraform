@@ -1,4 +1,4 @@
-module kraude_tf
+module terraform-provider-kraude
 
 go 1.19
 
