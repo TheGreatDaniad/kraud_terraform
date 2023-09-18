@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"fmt"
-	"time"
 
 	API "github.com/kraudcloud/cli/api"
 
@@ -17,16 +16,16 @@ func NewVolumesDataSource() datasource.DataSource {
 }
 
 type KraudVolume struct {
-	AID          types.String `json:"AID"`
-	Class        types.String `json:"Class"`
-	DeletionLock types.String `json:"DeletionLock,omitempty"`
-	ExpiresAt    *time.Time   `json:"ExpiresAt,omitempty"`
-	ID           types.String `json:"ID,omitempty"`
-	IOPS         types.Int64  `json:"IOPS,omitempty"`
-	Name         types.String `json:"Name"`
-	Size         types.Int64  `json:"Size"`
-	Version      types.String `json:"Version,omitempty"`
-	Zone         types.String `json:"Zone,omitempty"`
+	AID          types.String `json:"aid" tfsdk:"aid"`
+	Class        types.String `json:"class" tfsdk:"class"`
+	DeletionLock types.String `json:"deletion_lock,omitempty" tfsdk:"deletion_lock"`
+	ExpiresAt    types.String `json:"expires_at,omitempty" tfsdk:"expires_at"`
+	ID           types.String `json:"id,omitempty" tfsdk:"id"`
+	IOPS         types.Int64  `json:"iops,omitempty" tfsdk:"iops"`
+	Name         types.String `json:"name" tfsdk:"name"`
+	Size         types.Int64  `json:"size" tfsdk:"size"`
+	Version      types.String `json:"version,omitempty" tfsdk:"version"`
+	Zone         types.String `json:"zone,omitempty" tfsdk:"zone"`
 }
 
 type volumesDataSourceModel struct {
@@ -121,6 +120,7 @@ func (d *volumesDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		)
 		return
 	}
+	fmt.Println(volumes)
 	// Map response body to KraudVolume model
 	for _, volume := range volumes.Items {
 		volumeState := KraudVolume{
@@ -135,7 +135,7 @@ func (d *volumesDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		}
 
 		if volume.ExpiresAt != nil {
-			volumeState.ExpiresAt = volume.ExpiresAt
+			volumeState.ExpiresAt = types.StringValue(*volume.ID)
 		}
 
 		if volume.ID != nil {
@@ -155,6 +155,11 @@ func (d *volumesDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		}
 
 		state.Volumes = append(state.Volumes, volumeState)
+	}
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 }
