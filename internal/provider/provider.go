@@ -16,27 +16,27 @@ import (
 	API "github.com/kraudcloud/cli/api"
 )
 
-// Ensure KraudeProvider satisfies various provider interfaces.
-var _ provider.Provider = &KraudeProvider{}
+// Ensure kraudProvider satisfies various provider interfaces.
+var _ provider.Provider = &kraudProvider{}
 
-// KraudeProvider defines the provider implementation.
-type KraudeProvider struct {
+// kraudProvider defines the provider implementation.
+type kraudProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
 }
 
-// KraudeProviderModel describes the provider data model.
-type KraudeProviderModel struct {
+// kraudProviderModel describes the provider data model.
+type kraudProviderModel struct {
 	AuthToken types.String `tfsdk:"auth_token"`
 }
 
-func (p *KraudeProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "kraude"
+func (p *kraudProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+	resp.TypeName = "kraud"
 	resp.Version = p.version
 }
-func (p *KraudeProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *kraudProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"auth_token": schema.StringAttribute{
@@ -47,9 +47,9 @@ func (p *KraudeProvider) Schema(_ context.Context, _ provider.SchemaRequest, res
 	}
 }
 
-func (p *KraudeProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+func (p *kraudProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	// Retrieve provider data from configuration
-	var config KraudeProviderModel
+	var config kraudProviderModel
 	diags := req.Config.Get(ctx, &config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -59,8 +59,8 @@ func (p *KraudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	if config.AuthToken.IsUnknown() {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("auth_token"),
-			"Unknown Kraude Auth Token",
-			"The provider cannot create the Kraude API client as there is an unknown configuration value for the Kraude API auth token. "+
+			"Unknown kraud Auth Token",
+			"The provider cannot create the kraud API client as there is an unknown configuration value for the kraud API auth token. "+
 				"Either target apply the source of the value first, set the value statically in the configuration, or use the AUTH_TOKEN environment variable.",
 		)
 	}
@@ -79,7 +79,7 @@ func (p *KraudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		resp.Diagnostics.AddAttributeError(
 			path.Root("auth_token"),
 			"Missing Auth Token",
-			"The provider cannot create the Kraude API client as there is a missing or empty value for the Kraude auth Token. "+
+			"The provider cannot create the kraud API client as there is a missing or empty value for the kraud auth Token. "+
 				"Set the authToken value in the configuration or use the AUTH_TOKEN environment variable. "+
 				"If either is already set, ensure the value is not empty.",
 		)
@@ -95,16 +95,17 @@ func (p *KraudeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	resp.ResourceData = client
 }
 
-func (p *KraudeProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (p *kraudProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{}
 }
-
-func (p *KraudeProvider) DataSources(_ context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+func (p *kraudProvider) DataSources(_ context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{
+		NewVolumesDataSource,
+	}
 }
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
-		return &KraudeProvider{
+		return &kraudProvider{
 			version: version,
 		}
 	}

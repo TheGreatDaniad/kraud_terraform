@@ -6,12 +6,11 @@ package main
 import (
 	"context"
 	"flag"
-	"terraform-provider-kraude/internal/provider"
 	"log"
+	"terraform-provider-kraud/internal/provider"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
-
 
 var (
 	version string = "dev"
@@ -24,8 +23,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-
-		Address: "kraude.cloud/app/kraude",
+		Address: "kraud.cloud/app/kraud",
 		Debug:   debug,
 	}
 
